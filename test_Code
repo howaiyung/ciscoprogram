@@ -1,46 +1,39 @@
 #C:\Ruby22-x64\bin -w
 
+class Meals_Object
+  attr_accessor :t_c, :veg, :g_f, :n_f, :f_f, :a_f
 
-class Meal_order
-  attr_accessor :total_meals
-end
+  def initialize(t_c, veg, g_f, n_f, f_f)
 
-class Restaurant
-  attr_accessor :rest_name, :rest_rating, :rest_attributes
+    @t_c=t_c
+    @veg=veg
+    @g_f=g_f
+    @n_f=n_f
+    @f_f=f_f
+    @a_f=t_c-(veg+g_f+n_f+f_f)
 
-  def initialize(name, rating, attributes)
-    @rest_name=name
-    @rest_rating=rating
-    @rest_attributes=attributes
   end
 
 end
 
-
-class Restaurants
-
-  attr_accessor :rests
+class Restaurant < Meals_Object
+  attr_accessor :rest_name, :rest_rating
 
   def initialize
-    @rests = Array.new
+    super(t_c, veg, g_f, n_f, f_f)
+    @rest_name=name
+    @rest_rating=rating
   end
-
-
-
 end
-
-
-
-
 
 
 def get_info(first_msg, error_msg)
   temp_num = 0
 
   print first_msg
-  temp_num = Integer(gets).to_i rescue nil
+  temp_num = Integer(gets) rescue nil
 
-  until temp_num != nil and temp_num > 0
+  until temp_num != nil do
     print error_msg
     temp_num = Integer(gets) rescue nil
   end
@@ -49,12 +42,15 @@ def get_info(first_msg, error_msg)
 
 end
 
+
 def get_meals()
   t_c=0
   veg=0
   g_f=0
   n_f=0
   f_f=0
+
+
 
   begin
     t_c = get_info("How many meals are we ordering for the team?: ", "Invalid input, please retype the number of meals been ordered: ")
@@ -68,32 +64,10 @@ def get_meals()
 
   end until ((veg+g_f+n_f+f_f) <= t_c)
 
-  order_team = Meal_order.new
-  order_team.total_meals = t_c
-
-  if veg > 0
-    order_team.class.module_eval {attr_accessor :vegetarian}
-    order_team.vegetarian = veg
-  end
-
-  if g_f > 0
-    order_team.class.module_eval {attr_accessor :gluten_free}
-    order_team.gluten_free = g_f
-  end
-
-  if n_f > 0
-    order_team.class.module_eval {attr_accessor :nut_free}
-    order_team.nut_free = n_f
-  end
-
-  if f_f > 0
-    order_team.class.module_eval {attr_accessor :fish_free}
-    order_team.fish_free = f_f
-  end
+  order_team = Meals_Object.new(t_c, veg, g_f, n_f, f_f)
 
   return order_team
 end
-
 
 
 
@@ -101,13 +75,7 @@ class Main
 
   puts "Welcome to my restaurant customizer"
 
-  order_team = get_meals()
-
-  restaurants = Restaurants.new
-
-  restaurants.rests.push(Restaurant.new("Phillips",5,{total_meals: 40, vegetarian: 5, gluten_free: 2, nut_free: 2, fish_free: 2}))
-  restaurants.rests.push(Restaurant.new("Chicken LaFlay",4,{total_meals: 20, gluten_free: 1, nut_free: 1, fish_free: 1}))
-
+  @@order_team = get_meals()
 
   #Error checking if the total number of gluten, nut, vegetarian, fish > Total meals
 
@@ -128,10 +96,22 @@ class Main
 
 end
 
+def generate_rest()
 
+
+
+end
 
 
 
 
 
 Main
+
+print "How many meals are we ordering for the team?: "
+@@t_c = Integer(gets) rescue nil
+
+until @@t_c != nil do
+  print "Invalid input, please retype the number of meals been ordered: "
+  @@t_c = Integer(gets) rescue nil
+end
