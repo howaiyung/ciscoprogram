@@ -6,12 +6,12 @@ class Meal_order
 end
 
 class Restaurant
-  attr_accessor :rest_name, :rest_rating, :rest_attributes
+  attr_accessor :rest_name, :rest_rating, :meals_served
 
   def initialize(name, rating, attributes)
     @rest_name=name
     @rest_rating=rating
-    @rest_attributes=attributes
+    @meals_served=attributes
   end
 
 end
@@ -25,6 +25,17 @@ class Restaurants
     @rests = Array.new
   end
 
+  def sort_by(sort_type)
+    for rest in @rests
+      if rest.meals_served.has_attribute?(sort_type)
+        puts "True"
+      end
+    end
+
+  end
+
+
+# Delete restaurants that don't have specific meals that is required from the 
 
 
 end
@@ -108,7 +119,7 @@ class Main
   restaurants.rests.push(Restaurant.new("Phillips",5,{total_meals: 40, vegetarian: 5, gluten_free: 2, nut_free: 2, fish_free: 2}))
   restaurants.rests.push(Restaurant.new("Chicken LaFlay",4,{total_meals: 20, gluten_free: 1, nut_free: 1, fish_free: 1}))
 
-
+  restaurants.sort_by("vegetarian")
   #Error checking if the total number of gluten, nut, vegetarian, fish > Total meals
 
 
