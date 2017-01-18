@@ -115,3 +115,11 @@ until @@t_c != nil do
   print "Invalid input, please retype the number of meals been ordered: "
   @@t_c = Integer(gets) rescue nil
 end
+
+
+for rest in @rests
+
+  #puts rest.meals_served.key?(:vegetarian)
+  #puts rest.meals_served.key?(sort_type)
+  #puts rest.key?(sort_type)
+end

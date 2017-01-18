@@ -5,17 +5,9 @@
 def input_check(hashname, objecthash, object)
 
   object_string = object.to_s
-  #puts object_string
 
-  #if (object.is_a? Integer)
-
-  #puts object_temp
-
-  #if !(object_temp =~ /^[0-9A-F]+$/i)
-  #puts object_string
-
-  if object_string =~ /^[0-9]*$/
-    temp_num = object.to_i rescue nil
+  if object_string =~ /^[0-9]*$/ && !(object.nil?) #&& !(object_string.empty?)
+    temp_num = object.to_i
   else
     raise ArgumentError.new("Improper input for " + hashname + ", attribute "+ objecthash)
   end
@@ -33,17 +25,20 @@ class Meal_order
 
   def self.get_info(first_msg, error_msg)
     temp_num = 0
+    temp = 0
 
-    print first_msg
+    loop do
+      if temp == 0
+        print first_msg
+        temp = temp+1
+      else
+        print error_msg
+      end
 
-    temp_num = gets
-    temp_num_string = temp_num.to_s
-
-
-    until temp_num_string =~ /^[0-9]*$/
-      print error_msg
       temp_num = gets
-      temp_num_string = temp_num.to_s
+      temp_num_string = temp_num.to_s.delete!("\n")
+
+      break if temp_num_string =~ /^[0-9]*$/ && !(temp_num.nil?) && !(temp_num_string.empty?)
     end
 
     temp_num_int = temp_num.to_i
@@ -100,9 +95,6 @@ end
 class Restaurant < Meal_order
   attr_accessor :rest_name, :rest_rating
 
-
-
-
   def initialize(name, rating, t_c, veg, g_f, n_f, f_f)
 
     input_check(name, "Total_meals", t_c)
@@ -123,20 +115,68 @@ class Restaurants
 
   attr_accessor :rests
 
+
+
+  def sort_by(sort_type)
+
+
+
+
+    #rest = @rests.at(0)
+
+    #puts rest
+
+    #temp_rest = rest.new(5,1,1,1,1)
+
+    temp_rests = 0
+
+
+    if @rests.any?
+      rest = @rests.first
+
+      if rest.respond_to? (sort_type)
+        #temp_rests = @rests.sort_by(&:rest_rating) if sort_type == 'rest_rating'
+
+        #puts temp_rests.first.rest_rating
+
+        temp_rests = @rests.sort_by { |a| a.rest_rating }.reverse if sort_type == 'rest_rating'
+
+
+        #temp_rests.sort_by {|rest|, rest.rest_rating} if sort_type == 'rest_rating'
+      else
+        raise ArgumentError.new("Attribute does not exist for a restaurant")
+      end
+      #if rest.has_attribute?( sort_type )
+      #  puts "It works!"
+      #end
+    else
+      raise ArgumentError.new("No restaurants entered into the database")
+    end
+    #@rests.each do |rest|
+    #  puts rest
+    #end
+    #if rest.has_attribute?( sort_type )
+    #  puts "It works!"
+    #end
+
+
+  end
+
+  def get_rest_order(team_order)
+    #Sort the list of restaurants by ratings
+    #Subtract from the top restaurant
+    # if any individuals are left, provide error message of not
+    # enable to fulfill the order
+  end
+
+
+
   def initialize
     @rests = Array.new
   end
 
-  def sort_by(sort_type)
 
-    for rest in @rests
 
-      #puts rest.meals_served.key?(:vegetarian)
-      #puts rest.meals_served.key?(sort_type)
-      #puts rest.key?(sort_type)
-    end
-
-  end
 
 
 # Delete restaurants that don't have specific meals that is required from the
@@ -157,9 +197,9 @@ end
 
 class Main
 
-  puts "Welcome to my restaurant customizer"
+  #puts "Welcome to my restaurant customizer"
 
-  order_team = Meal_order.new_using_order_meals
+  #order_team = Meal_order.new_using_order_meals
 
   #restaurants = Restaurants.new
 
@@ -173,13 +213,15 @@ class Main
 
 
 
-  #restaurants = Restaurants.new
+  restaurants = Restaurants.new
 
   #restaurants.rests.push(Restaurant.new("Phillips",5,{total_meals: 40, vegetarian: 5, gluten_free: 2, nut_free: 2, fish_free: 2}))
   #restaurants.rests.push(Restaurant.new("Chicken LaFlay",4,{total_meals: 20, gluten_free: 1, nut_free: 1, fish_free: 1}))
 
+  restaurants.rests.push(Restaurant.new("Chicken",4,5,1,1,1,1))
+  restaurants.rests.push(Restaurant.new("Phillips",5,5,1,1,1,1))
 
-  #restaurants.sort_by(:vegetarian)
+  restaurants.sort_by('rest_rating')
 
   #restaurants.sort_by(:vegetarian)
 

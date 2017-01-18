@@ -66,7 +66,7 @@ DOC
   end
 
   # Can not stop the conversion from automatically from hex to an integer,
-  # a primitive conversion. Built into Ruby. 
+  # a primitive conversion. Built into Ruby.
   def test_Meal_order_initializer_all_hex_integer
     assert_raise( ArgumentError ){Meal_order.new(0x90,0x26,0x10,0x10,0x10)}
   end
@@ -82,6 +82,41 @@ DOC
     mIN = -max - 1
     assert_nothing_raised( ArgumentError ){Meal_order.new(max,1,1,1,1)}
   end
+
+  def test_Meal_order_initializer_empty
+    assert_raise( ArgumentError ){Meal_order.new('\n','\n','\n','\n','\n')}
+  end
+#-----------------------------------------------------------------------------------------------------
+
+<<-DOC
+  #Dealing with this set of test cases later, can't figure out how to create Ruby unit
+  #test cases that require a pre-established input for the variable.
+
+
+  def test_Meal_order_get_info_normal
+    assert_nothing_raised( RuntimeError ){Meal_order.get_info("This is", " how the")}
+  end
+
+  def test_Meal_order_get_info_nil
+    assert_nothing_raised( RuntimeError ){Meal_order.get_info(nil, nil)}
+  end
+
+  def test_Meal_order_get_info_integers
+    assert_nothing_raised( RuntimeError ){Meal_order.get_info(56, 56)}
+  end
+
+  def test_Meal_order_get_info_hex
+    assert_nothing_raised( RuntimeError ){Meal_order.get_info(0x70, 0x91)}
+  end
+DOC
+
+#-----------------------------------------------------------------------------------------------------
+
+  #def test_Meal_order_get_info_hex_nil
+  #  assert_nothing_raised( RuntimeError ){Meal_order.get_info(0xf0a1, 0xf0a1)}
+  #end
+
   #def test_Meal_order_initializer_
+
 
 end
