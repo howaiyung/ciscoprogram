@@ -14,15 +14,13 @@ def input_check(hashname, objecthash, object)
   #if !(object_temp =~ /^[0-9A-F]+$/i)
   #puts object_string
 
-  if (object.is_a? Integer) && !(object_string =~ /^[0-9][A-F]+$/i) && !(object.is_a? Float)
-    temp_num = Integer(object).to_i rescue nil
+  if object_string =~ /^[0-9]*$/
+    temp_num = object.to_i rescue nil
   else
     raise ArgumentError.new("Improper input for " + hashname + ", attribute "+ objecthash)
   end
 
-  if temp_num == nil || temp_num<0
-    raise ArgumentError.new("Improper input for " + hashname + ", attribute "+ objecthash)
-  end
+
   return temp_num
 
 
@@ -37,14 +35,20 @@ class Meal_order
     temp_num = 0
 
     print first_msg
-    temp_num = Integer(gets).to_i rescue nil
 
-    until temp_num != nil and temp_num >= 0
+    temp_num = gets
+    temp_num_string = temp_num.to_s
+
+
+    until temp_num_string =~ /^[0-9]*$/
       print error_msg
-      temp_num = Integer(gets) rescue nil
+      temp_num = gets
+      temp_num_string = temp_num.to_s
     end
 
-    return temp_num
+    temp_num_int = temp_num.to_i
+
+    return temp_num_int
   end
 
   def self.new_using_order_meals()
@@ -153,17 +157,17 @@ end
 
 class Main
 
-  #puts "Welcome to my restaurant customizer"
+  puts "Welcome to my restaurant customizer"
 
-  #order_team = Meal_order.new_using_order_meals
+  order_team = Meal_order.new_using_order_meals
 
-  restaurants = Restaurants.new
+  #restaurants = Restaurants.new
 
   #restaurants.rests.push(Restaurant.new("Phillips",5,2.5,0.1,0.1,0.1,0.1))
 
   #restaurants.rests.push(Restaurant.new("Phillips",5,nil,nil,nil,nil,nil))
 
-  restaurants.rests.push(Restaurant.new("Phillips",5,0x90,0x26,0x10,0x10,0x10))
+  #restaurants.rests.push(Restaurant.new("Phillips",5,0x90,0x26,0x10,0x10,0x10))
 
 
 
