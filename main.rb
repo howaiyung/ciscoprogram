@@ -6,7 +6,7 @@ def input_check(hashname, objecthash, object)
 
   object_string = object.to_s
 
-  if object_string =~ /^[0-9]*$/ && !(object.nil?) #&& !(object_string.empty?)
+  if object_string =~ /^[0-9]*$/ && !(object.nil?)
     if objecthash == "rest_rating"
       if object.to_i <= 5
         temp_num = object.to_i
@@ -116,11 +116,17 @@ class Restaurant < Meal_order
     check_meal(name, t_c, veg, g_f, n_f, f_f)
 
     super(t_c, veg, g_f, n_f, f_f)
+
+    input_check("Restaurant", "rest_rating", rating)
+
     @rest_name=name
     @rest_rating=rating
   end
 
 end
+
+
+
 
 
 class Restaurants
@@ -175,73 +181,98 @@ class Restaurants
     return temp_rests
   end
 
-  def get_part_meal_order(meal_attr, meal_type, rest_order, team_order, rest)
+  def get_part_meal_order(meal_attr, meal_type, rest_order, team_order, rest, rests_meals)
 
-    if(team_order.send(meal_attr) -  rest.send(meal_attr) < 0)
-      rest.total_meals -= team_order.send(meal_attr)
-      rest_order.push(team_order.send(meal_attr))
-      team_order.total_meals -= team_order.send(meal_attr)
-      team_order.send(meal_type, 0)
+    if (rest_order.instance_of? Array) && (team_order.instance_of? Meal_order) &&
+       (rest.instance_of? Restaurant) && (rests_meals.instance_of? Array)  &&
+        (meal_type.instance_of? String) && (team_order.respond_to?(meal_attr))
+      if(team_order.send(meal_attr) -  rest.send(meal_attr) < 0)
+        rest.total_meals -= team_order.send(meal_attr)
+        rest_order.push(team_order.send(meal_attr))
+        team_order.total_meals -= team_order.send(meal_attr)
+        team_order.send(meal_type, 0)
+      else
+        rest_order.push(rest.send(meal_attr))
+        team_order.send(meal_type, team_order.send(meal_attr)-rest.send(meal_attr))
+        rest.total_meals -= rest.send(meal_attr)
+        team_order.total_meals -= rest.send(meal_attr)
+      end
+
+      if team_order.total_meals == 0
+        rests_meals.push(rest_order)
+      end
     else
-      rest_order.push(rest.send(meal_attr))
-      team_order.send(meal_type, team_order.send(meal_attr)-rest.send(meal_attr))
-      rest.total_meals -= rest.send(meal_attr)
-      team_order.total_meals -= rest.send(meal_attr)
+      raise ArgumentError.new("Invalid data")
     end
+
+
   end
 
   def get_rest_order(team_order)
 
     temp_rest_meals = Array.new
 
-
     rests_sort = sort_by('rest_rating')
 
     check_meal("Order meal", team_order.total_meals, team_order.vegetarian, team_order.gluten_free, team_order.nut_free, team_order.fish_free)
 
     rests_sort.each do |rest|
-    #  temp_rest_meals = rest.instance_variables.map{|var| print rest.instance_variable_get(var)}
+
       temp_order_rest = Array.new
 
       temp_order_rest.push(rest.rest_name)
+      get_part_meal_order(:vegetarian, "vegetarian=", temp_order_rest, team_order, rest, temp_rest_meals)
+      break if team_order.total_meals == 0
 
-      get_part_meal_order(:vegetarian, "vegetarian=", temp_order_rest, team_order, rest)
-      if team_order.total_meals == 0
-        temp_rest_meals.push(temp_order_rest)
-        break
-      end
+      get_part_meal_order(:gluten_free, "gluten_free=", temp_order_rest, team_order, rest, temp_rest_meals)
+      break if team_order.total_meals == 0
 
-      get_part_meal_order(:gluten_free, "gluten_free=", temp_order_rest, team_order, rest)
-      if team_order.total_meals == 0
-        temp_rest_meals.push(temp_order_rest)
-        break
-      end
+      get_part_meal_order(:nut_free, "nut_free=", temp_order_rest, team_order, rest, temp_rest_meals)
+      break if team_order.total_meals == 0
 
-      get_part_meal_order(:nut_free, "nut_free=", temp_order_rest, team_order, rest)
-      if team_order.total_meals == 0
-        temp_rest_meals.push(temp_order_rest)
-        break
-      end
+      get_part_meal_order(:fish_free, "fish_free=", temp_order_rest, team_order, rest, temp_rest_meals)
+      break if team_order.total_meals == 0
 
-      get_part_meal_order(:fish_free, "fish_free=", temp_order_rest, team_order, rest)
-      if team_order.total_meals == 0
-        temp_rest_meals.push(temp_order_rest)
-        break
-      end
-
-      get_part_meal_order(:total_meals, "total_meals=", temp_order_rest, team_order, rest)
-      if team_order.total_meals == 0
-        temp_rest_meals.push(temp_order_rest)
-        break
-      end
+      get_part_meal_order(:total_meals, "total_meals=", temp_order_rest, team_order, rest, temp_rest_meals)
+      break if team_order.total_meals == 0
 
       temp_rest_meals.push(temp_order_rest)
 
-      puts team_order.inspect
+    end
+
+    if team_order.total_meals == 0
+      print "Expected meal order:"
+      temp_rest_meals.each do |order_rest|
+        print " #{order_rest[0]} "
+        print "( #{order_rest[1] if order_rest[1] != 0 }#{" vegetarian + " if order_rest[1] != 0 }"
+        print "#{order_rest[2] if order_rest[2] != 0 }#{" gluten-free + " if order_rest[2] != 0 }"
+        print "#{order_rest[3] if order_rest[3] != 0 }#{" nut-free + " if order_rest[3] != 0 }"
+        print "#{order_rest[4] if order_rest[4] != 0 }#{" fish-free + " if order_rest[4] != 0 }"
+        print "#{order_rest[5] if order_rest[5] != 0 }#{" others" if order_rest[5] != 0 } ), "
+      end
+    else
+      total_other = team_order.total_meals - (team_order.vegetarian + team_order.gluten_free + team_order.nut_free + team_order.fish_free)
+
+      print "Unfortunately, we cannot fulfill the order, "
+      print "There are #{team_order.total_meals} meals that cannot be filled "
+      print "(#{team_order.vegetarian if team_order.vegetarian != 0}#{" vegetarian," if team_order.vegetarian != 0 }"
+      print " #{team_order.gluten_free if team_order.gluten_free != 0}#{" gluten_free," if team_order.gluten_free != 0 }"
+      print " #{team_order.nut_free if team_order.nut_free != 0}#{" nut_free," if team_order.nut_free != 0 }"
+      print " #{team_order.fish_free if team_order.fish_free != 0}#{" fish_free," if team_order.fish_free != 0 }"
+      puts " #{total_other if total_other != 0}#{" other )" if total_other != 0 }"
+
+      print "Close meal order:"
+      temp_rest_meals.each do |order_rest|
+        print " #{order_rest[0]} "
+        print "( #{order_rest[1] if order_rest[1] != 0 }#{" vegetarian + " if order_rest[1] != 0 }"
+        print "#{order_rest[2] if order_rest[2] != 0 }#{" gluten-free + " if order_rest[2] != 0 }"
+        print "#{order_rest[3] if order_rest[3] != 0 }#{" nut-free + " if order_rest[3] != 0 }"
+        print "#{order_rest[4] if order_rest[4] != 0 }#{" fish-free + " if order_rest[4] != 0 }"
+        print "#{order_rest[5] if order_rest[5] != 0 }#{" others" if order_rest[5] != 0 } ), "
+      end
 
     end
 
-    puts "#{temp_rest_meals}"
   end
 
 
@@ -249,14 +280,6 @@ class Restaurants
   def initialize
     @rests = Array.new
   end
-
-
-
-
-
-# Delete restaurants that don't have specific meals that is required from the
-
-
 end
 
 
@@ -272,50 +295,17 @@ end
 
 class Main
 
-  #puts "Welcome to my restaurant customizer"
-
-  #order_team = Meal_order.new_using_order_meals
+  puts "Welcome to my restaurant customizer"
 
   #restaurants = Restaurants.new
-
-  #restaurants.rests.push(Restaurant.new("Phillips",5,2.5,0.1,0.1,0.1,0.1))
-
-  #restaurants.rests.push(Restaurant.new("Phillips",5,nil,nil,nil,nil,nil))
-
-  #restaurants.rests.push(Restaurant.new("Phillips",5,0x90,0x26,0x10,0x10,0x10))
-
-
-
-
-
-  restaurants = Restaurants.new
 
   #restaurants.rests.push(Restaurant.new("Phillips",5,{total_meals: 40, vegetarian: 5, gluten_free: 2, nut_free: 2, fish_free: 2}))
   #restaurants.rests.push(Restaurant.new("Chicken LaFlay",4,{total_meals: 20, gluten_free: 1, nut_free: 1, fish_free: 1}))
 
-  restaurants.rests.push(Restaurant.new("Chicken",4,5,1,1,1,1))
-  restaurants.rests.push(Restaurant.new("Phillips",5,9,1,1,1,2))
+  #restaurants.rests.push(Restaurant.new("Chicken",4,2,0,0,0,1))
+  #restaurants.rests.push(Restaurant.new("Phillips",5,3,1,0,1,0))
 
-  restaurants.get_rest_order(Meal_order.new(11,1,1,1,1))
-
-  #restaurants.sort_by(:vegetarian)
-
-  #Error checking if the total number of gluten, nut, vegetarian, fish > Total meals
-
-
-
-  #puts order_team.t_c
-
-
-  # Algorithm, find which sub group is the biggest from the order
-  # Select the 1st restaurant base upon the closest amount that can handle the number of meals
-  #
-  # Generate a bunch of restaurants using a random name and number generator function
-  # about a 100 restaurants
-
-  # Another function handles the selection
-
-  # display results
+  #restaurants.get_rest_order(Meal_order.new(11,1,1,1,2))
 
 end
 
@@ -323,6 +313,7 @@ end
 
 
 
+#Improvements later on, add additional varaible called other which is total meals minus all the specialty meals
 
 
 Main

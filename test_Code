@@ -171,3 +171,47 @@ if meal_type == "total_meals"
 
   rest_order.send(meal_type, 0)
 else
+
+
+
+<<-DOC
+
+
+
+
+DOC
+
+
+# Delete restaurants that don't have specific meals that is required from the
+
+
+#order_team = Meal_order.new_using_order_meals
+
+#restaurants = Restaurants.new
+
+#restaurants.rests.push(Restaurant.new("Phillips",5,2.5,0.1,0.1,0.1,0.1))
+
+#restaurants.rests.push(Restaurant.new("Phillips",5,nil,nil,nil,nil,nil))
+
+#restaurants.rests.push(Restaurant.new("Phillips",5,0x90,0x26,0x10,0x10,0x10))
+
+
+
+#restaurants.sort_by(:vegetarian)
+
+#Error checking if the total number of gluten, nut, vegetarian, fish > Total meals
+
+
+
+#puts order_team.t_c
+
+
+# Algorithm, find which sub group is the biggest from the order
+# Select the 1st restaurant base upon the closest amount that can handle the number of meals
+#
+# Generate a bunch of restaurants using a random name and number generator function
+# about a 100 restaurants
+
+# Another function handles the selection
+
+# display results
