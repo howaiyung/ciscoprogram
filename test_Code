@@ -123,3 +123,51 @@ for rest in @rests
   #puts rest.meals_served.key?(sort_type)
   #puts rest.key?(sort_type)
 end
+
+#rest = @rests.at(0)
+
+#puts rest
+
+#temp_rest = rest.new(5,1,1,1,1)
+
+
+
+dummy_rest = Restaurant.new("the",5,5,1,1,1,1)
+#puts dummy_rest.methods - Restaurant.instance_methods
+#puts dummy_rest.methods
+
+#puts Restaurant.new.attributes.keys - Restaurant.protected_attributes.to_a
+
+#p dummy_rest.attributes
+
+#puts dummy_rest.attributes.keys
+
+#p Restaurants
+
+#puts dummy_rest.attributes.values
+
+
+
+#puts Restaurant.instance_variables.map{|var| puts var}
+#puts dummy_rest.to_yaml
+#puts Restaurant.methods.attribute
+#puts Restaurant.column_names
+
+#puts dummy_rest.map(&:title)
+
+#error_checking_rest(rest)
+
+def error_checking_rest(rest)
+
+  rest_vars = Restaurant.new("the",5,5,1,1,1,1).instance_variables.map{|var| var}
+
+  puts rest_vars
+end
+
+if meal_type == "total_meals"
+  rest_order.push(rest.send(meal_attr))
+  team_order.total_meals -= rest.send(meal_attr)
+  team_order.send(meal_type, team_order.send(meal_attr)-rest.send(meal_attr))
+
+  rest_order.send(meal_type, 0)
+else
