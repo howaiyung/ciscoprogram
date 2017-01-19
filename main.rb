@@ -26,7 +26,7 @@ def input_check(hashname, objecthash, object)
 
 end
 
-
+# Common function used by all classes to check if the data entered in
 def check_meal(name, t_c, veg, g_f, n_f, f_f)
   input_check("Order meal", "Total_meals", t_c)
   input_check("Order meal", "vegetarian", veg)
@@ -140,7 +140,7 @@ class Restaurants
 
     if @rests.any?  # Check if there is any entries in the restaurants array
       rests.each do |rest| # Go through each entry in the array
-        if rest.instance_of? Restaurant #Check if the resturant is an instance of Restaurant
+        if rest.instance_of? Restaurant #Check if the restaurant is an instance of Restaurant
           # Check if each value in the
           input_check(rest.rest_name, "rest_rating", rest.rest_rating)
           check_meal(rest.rest_name, rest.total_meals, rest.vegetarian, rest.gluten_free, rest.nut_free, rest.fish_free)
@@ -297,13 +297,15 @@ class Main
 
   puts "Welcome to my restaurant customizer"
 
-  #restaurants = Restaurants.new
+  new_team_order = Meal_order.new_using_order_meals()
 
-  #restaurants.rests.push(Restaurant.new("Phillips",5,{total_meals: 40, vegetarian: 5, gluten_free: 2, nut_free: 2, fish_free: 2}))
-  #restaurants.rests.push(Restaurant.new("Chicken LaFlay",4,{total_meals: 20, gluten_free: 1, nut_free: 1, fish_free: 1}))
+  restaurants = Restaurants.new
 
-  #restaurants.rests.push(Restaurant.new("Chicken",4,2,0,0,0,1))
-  #restaurants.rests.push(Restaurant.new("Phillips",5,3,1,0,1,0))
+  restaurants.rests.push(Restaurant.new("Chicken",4,2,0,0,0,1))
+  restaurants.rests.push(Restaurant.new("Phillips",5,3,1,0,1,0))
+
+  restaurants.get_rest_order(new_team_order)
+
 
   #restaurants.get_rest_order(Meal_order.new(11,1,1,1,2))
 
